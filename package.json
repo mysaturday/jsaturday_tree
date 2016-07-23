@@ -1,0 +1,14 @@
+{
+  "name": "jsaturday_tree",
+  "version": "1.0.0",
+  "description": "Generic Tree data structure",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^2.2.0"
+  }
+}
