@@ -4,9 +4,9 @@
 Simple in-memory tree structure to represent hierarchical data. 
 
 The tree is defined by:
-- *n* nodes; each node is an Object contains arbitrary data, and two special fields: **_id** (unique node id) and **_parent** (id of parent node). If no parent node is given, it is automatically assigned
+- *n* nodes; each node is an Object contains arbitrary data, and two special fields: **_id** (unique node id) and **_parent** (id of parent node). If no parent node is given, it is automatically assigned to orphanParent (... I know...)
 - *One* root node, with _id = 'ROOT'
-- *One* orphan node, (default _id = 'ORPHANS') connected under 'ROOT' node.
+- *One* orphanParent node, (default _id = 'ORPHANS') connected under 'ROOT' node.
 - *One* parent for each node, or *zero* parents (in this case node will be connected to orphan node).
 
 ## Installation
