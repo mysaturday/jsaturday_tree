@@ -10,6 +10,8 @@ module.exports = function Tree(settings) {
     settings = {};
 
   settings.orphanParentId = settings.orphanParentId || DEFAULT_ORPHAN_ID;
+  settings.TTL = settings.TTL || 0;
+
 
   var cache = {};
 
@@ -62,14 +64,26 @@ module.exports = function Tree(settings) {
     if (!nodes[nodeId])
       throw new Error('Node ' + nodeId + ' not found!');
 
+    if (nodeId === 'ROOT')
+      throw new Error('Not allowed to remove ROOT node');
+
+    if (nodeId === settings.orphanParentId)
+      throw new Error('Not allowed to remove orphanParent node');
+
+    this.initialize();
+
     // In case of children
     if(nodes[nodeId]._children){
       var i;
       // If newParentForChildren is defined, move all children to
       // this node
-      if(!newParentForChildren || !nodes[newParentForChildren]){
+      if(!newParentForChildren){
         debug('warning', 'Children of node ' + nodeId + ' will be connected to orphan node');
         newParentForChildren = settings.orphanParentId;
+      }
+
+      if(!nodes[newParentForChildren]){
+        throw new Error('newParentForChildren node not found!')
       }
       if(newParentForChildren && nodes[newParentForChildren]){
         for(i = 0; i < nodes[nodeId]._children.length; i++){
@@ -84,8 +98,8 @@ module.exports = function Tree(settings) {
     
     delete nodes[nodeId];
 
-    cleanCache();
-    initialized = false;
+    this.initialized = false;
+    this.initialize();
   }
 
   this.getNodeCopy = function(nodeId){
@@ -95,12 +109,17 @@ module.exports = function Tree(settings) {
     if (!nodes[nodeId])
       throw new Error('Node ' + nodeId + ' not found!');
 
+    this.initialize();
+
     return clone(nodes[nodeId]);
   }
 
   this.updateNode = function(nodeObject){
     if (!nodeObject)
       throw new Error('Missing nodeObject');
+
+    if (typeof nodeObject !== 'object')
+      throw new Error('Missing nodeObject');    
 
     if (!nodeObject._id)
       throw new Error('Missing nodeObject._id');    
@@ -111,12 +130,15 @@ module.exports = function Tree(settings) {
     var newNode = clone(nodeObject);
     nodes[newNode._id] = newNode;
     
-    cleanCache();
-    initialized = false;
+    this.initialized = false;
+    this.initialize();
 
   }
 
   this.initialize = function() {
+
+    if(initialized)
+      return true;
 
     // Reset cache
     cleanCache();
@@ -163,6 +185,7 @@ module.exports = function Tree(settings) {
   };
 
   this.getAllCopy = function() {
+    this.initialize();
     return clone(nodes);
   };
 
@@ -172,6 +195,8 @@ module.exports = function Tree(settings) {
 
     if (!nodes[nodeId])
       throw new Error('Node ' + nodeId + ' not found!');
+
+    this.initialize();
 
     if (cache.up[nodeId]) {
       console.log("CACHED!");
@@ -201,6 +226,8 @@ module.exports = function Tree(settings) {
 
     if (!nodes[nodeId])
       throw new Error('Node ' + nodeId + ' not found!');
+
+    this.initialize();
 
     if (cache.down[nodeId]) {
       console.log("CACHED!");
