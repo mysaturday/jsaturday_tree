@@ -87,6 +87,34 @@ module.exports = function Tree(settings) {
     this.initialized = false;
   }
 
+  this.getNodeCopy = function(nodeId){
+    if (!nodeId)
+      throw new Error('Missing nodeId');
+
+    if (!nodes[nodeId])
+      throw new Error('Node ' + nodeId + ' not found!');
+
+    return clone(nodes[nodeId]);
+  }
+
+  this.updateNode = function(nodeObject){
+    if (!nodeObject)
+      throw new Error('Missing nodeObject');
+
+    if (!nodeObject._id)
+      throw new Error('Missing nodeObject._id');    
+
+    if (!nodes[ nodeObject._id ])
+      throw new Error('Node ' + nodeObject._id + ' not found, I can not update!');
+
+    var newNode = clone(nodeObject);
+    nodes[newNode._id] = newNode;
+    
+    cleanCache();
+    this.initialized = false;
+
+  }
+
   this.initialize = function() {
 
     // Reset cache
@@ -203,3 +231,9 @@ module.exports = function Tree(settings) {
   };
 
 };
+
+
+
+function clone(obj){
+  return JSON.parse(JSON.stringify( obj ));
+}

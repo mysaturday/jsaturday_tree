@@ -22,3 +22,17 @@ console.log('---------');
 t.removeNode("NODE1");
 
 console.log(t.getAll());
+
+console.log('---------');
+
+var n3a = t.getNodeCopy('NODE3');
+console.log(n3a);
+n3a.CIAO = 1;
+console.log(n3a);
+var n3b = t.getNodeCopy('NODE3');
+console.log(n3b);
+
+console.log('---------');
+t.updateNode(n3a);
+n3a.OK = true;
+console.log(t.getNodeCopy('NODE3'));
