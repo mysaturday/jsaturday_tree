@@ -1,15 +1,15 @@
 {
   "name": "jsaturday_tree",
   "version": "1.0.0",
-  "description": "Generic Tree data structure",
+  "description": "Generic in-memory Tree data structure",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/mocha/bin/mocha test/test.js"
   },
-  "author": "",
+  "author": "Francesco Sirocco",
   "license": "ISC",
   "dependencies": {
-    "debug": "^2.2.0"
+    "debug": "2.2.0"
   },
   "devDependencies": {
     "mocha": "2.5.3",
