@@ -17,6 +17,7 @@ module.exports = function Tree(settings) {
     cache = {
       up: {},
       down: {},
+      all: [],
     };
   }
 
@@ -27,7 +28,7 @@ module.exports = function Tree(settings) {
   }
 
   var nodes = {};
-  this.initialized = false;
+  var initialized = false;
 
   this.addNode = function(node) {
     if (!node._id)
@@ -49,7 +50,7 @@ module.exports = function Tree(settings) {
       delete node._parent;
     }
 
-    this.initialized = false;
+    initialized = false;
 
     nodes[node._id] = node;
   };
@@ -84,7 +85,7 @@ module.exports = function Tree(settings) {
     delete nodes[nodeId];
 
     cleanCache();
-    this.initialized = false;
+    initialized = false;
   }
 
   this.getNodeCopy = function(nodeId){
@@ -111,7 +112,7 @@ module.exports = function Tree(settings) {
     nodes[newNode._id] = newNode;
     
     cleanCache();
-    this.initialized = false;
+    initialized = false;
 
   }
 
@@ -161,11 +162,8 @@ module.exports = function Tree(settings) {
 
   };
 
-  this.getAll = function() {
-    if (!self.initialized)
-      self.initialize();
-
-    return nodes;
+  this.getAllCopy = function() {
+    return clone(nodes);
   };
 
   this.getUp = function(nodeId) {

@@ -89,7 +89,7 @@ roles.initialize();
 // Get data structure.
 //-----------------------------------------------------------------
 // Returns a COPY node objects, with _children attribute computed
-var all = roles.getAll();
+var all = roles.getAllCopy();
 
 //-----------------------------------------------------------------
 // Up and Down chains
