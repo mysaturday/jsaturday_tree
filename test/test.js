@@ -71,6 +71,17 @@ describe('# jSaturday_tree', function() {
     done();
   });
 
+  it('# Exception, if node exists (same _id)', function(done) {
+
+    (function() {
+      tree1.addNode({
+        _id: 'NODE.1'
+      });
+    }).should.throw('Node exists on the tree');    
+    done();
+     
+  });
+
   it('# Checking ROOT', function(done) {
     var node = tree1.getAllCopy().ROOT;
     checkNode(node, {
@@ -290,6 +301,7 @@ describe('# jSaturday_tree', function() {
   it('# Updating NODE.1.1 (passing a COPY)', function(done) {
     var nodeA = tree1.getNodeCopy('NODE.1.1');
     nodeA.value = '1000';
+    delete nodeA._children; // _children is not allowed!
 
     tree1.updateNode(nodeA);
 
@@ -441,6 +453,83 @@ describe('# jSaturday_tree', function() {
 
     done();
   });
+
+  it('# addNode with callback success', function(done) {
+    
+    tree1.addNode({
+      _id: "NEW_NODE1",
+      field1: "1"
+    }, function(err, addedNode){
+      (err === null).should.equal(true);
+      addedNode.should.have.property('_id', 'NEW_NODE1');
+      addedNode.should.have.property('field1', '1');
+      addedNode.should.have.property('_parent', 'MY_ORPHANS');
+      done();
+    });
+
+  });  
+
+  it('# addNode with callback error', function(done) {
+    
+    tree1.addNode({
+      _id: "ROOT",
+      field1: "1"
+    }, function(err, addedNode){
+      (err === null).should.equal(false);
+      (!!addedNode).should.equal(false);
+      done();
+    });
+
+  });  
+
+  it('# updateNode with callback success', function(done) {
+    
+    tree1.updateNode({
+      _id: "NEW_NODE1",
+      field1: "2"
+    }, function(err, addedNode){
+      (err === null).should.equal(true);
+      addedNode.should.have.property('_id', 'NEW_NODE1');
+      addedNode.should.have.property('field1', '2');
+      addedNode.should.have.property('_parent', 'MY_ORPHANS');
+      done();
+    });
+
+  });  
+
+  it('# updateNode with callback error', function(done) {
+    
+    tree1.updateNode({
+      _id: "NEW_NODE1",
+      field1: "2",
+      _children: ["1"]
+    }, function(err, updatedNode){
+      (err === null).should.equal(false);
+      (!!updatedNode).should.equal(false);
+      done();
+    });
+
+  });    
+
+  it('# removeNode with callback success', function(done) {
+    
+    tree1.removeNode("NEW_NODE1", function(err, success){
+      (err === null).should.equal(true);
+      (success === true).should.equal(true);
+      done();
+    });
+
+  });
+
+  it('# removeNode with callback error', function(done) {
+    
+    tree1.removeNode("WRONG_NODE", function(err, success){
+      (err === null).should.equal(false);
+      (success === true).should.equal(false);
+      done();
+    });
+
+  });    
 
 });
 

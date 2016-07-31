@@ -9,6 +9,9 @@ The tree is defined by:
 - *One* orphanParent node, (default _id = 'ORPHANS') connected under 'ROOT' node.
 - *One* parent for each node, or *zero* parents (in this case node will be connected to orphan node).
 
+## New features
+- v 1.1 added optional callbacks for *addNode()*, *removeNode()*, and *updateNode()*. Updated unit tests.
+
 ## Installation
 
 ```sh
@@ -21,7 +24,33 @@ $ npm i jsaturday_tree
 $ npm test
 ```
 
-## Usage
+## Api
+
+```js
+// Constructor
+var Tree = require('jsaturday_tree');
+var roles = new Tree(options);
+
+// Add node
+roles.addNode(nodeObject, <function(err, node){...}>);
+
+// Remove node
+roles.removeNode(nodeId, <newParentId>, <function(err, success){...}>);
+
+// Update node
+roles.updateNode(nodeObject, <function(err, node){...}>);
+
+// Initialize / reinitialize
+roles.initialize();
+
+// Get copy of all nodes / a selected node after computing children
+var nodesArray = roles.getAllCopy();
+var nodeObject = roles.getNodeCopy(nodeId);
+```
+
+Please check the follow examples as API documentation.
+
+## Examples
 ```js
 // Require Tree object
 var Tree = require('jsaturday_tree');

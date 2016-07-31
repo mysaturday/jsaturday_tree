@@ -32,43 +32,90 @@ module.exports = function Tree(settings) {
   var nodes = {};
   var initialized = false;
 
-  this.addNode = function(node) {
-    if (!node._id)
-      throw new Error('Missing _id for node ' + node);
+  this.addNode = function(node, callback) {
+    if (!node._id){
+      if(!callback)
+        throw new Error('Missing _id for node ' + node);
+      return callback(new Error('Missing _id for node ' + node));
+    }
 
-    if (node._children)
-      throw new Error('_children field is not allowed.');
+    if (node._children){
+      if(!callback)
+        throw new Error('_children field is not allowed.');
+      return callback(new Error('_children field is not allowed.'));
+    }
 
     if (!node._parent && node._id !== 'ROOT'){
       debug('warning', 'Node ' + node._id + ' will be connected to orphan node');
       node._parent = settings.orphanParentId;
     }
 
-    if (node._parent === node._id)
-      throw new Error('Node _id can not be equal to _parent');
-
+    if (node._parent === node._id){
+      if(!callback)
+        throw new Error('Node _id can not be equal to _parent');
+      return callback(new Error('Node _id can not be equal to _parent'));
+    }
 
     if (node._id === 'ROOT') {
       delete node._parent;
     }
 
+    if (nodes[node._id]){
+      if(!callback)
+        throw new Error('Node exists on the tree');
+      return callback(new Error('Node exists on the tree'));
+    }
+
     initialized = false;
 
     nodes[node._id] = node;
+
+    if(callback && typeof callback === 'function'){
+      return callback(null, node);
+    }
+
   };
 
-  this.removeNode = function(nodeId, newParentForChildren){
-    if (!nodeId)
-      throw new Error('Missing nodeId');
 
-    if (!nodes[nodeId])
-      throw new Error('Node ' + nodeId + ' not found!');
+//  this.removeNode = function(nodeId, newParentForChildren, callback){
+  this.removeNode = function(nodeId, arg2, arg3){
 
-    if (nodeId === 'ROOT')
-      throw new Error('Not allowed to remove ROOT node');
+    var newParentForChildren = null;
+    var callback = null;
+    if(arg3 && typeof arg3 === 'function'){
+      newParentForChildren = arg2;
+      callback = arg3;
+    }
+    else if(!arg3 && typeof arg2 === 'function'){
+      callback = arg2;
+    }
+    else if(!arg3 && typeof arg2 !== 'function'){
+      newParentForChildren = arg2;
+    }
 
-    if (nodeId === settings.orphanParentId)
-      throw new Error('Not allowed to remove orphanParent node');
+    if (!nodeId){
+      if(!callback)
+        throw new Error('Missing nodeId');
+      return callback(new Error('Missing nodeId'));
+    }
+
+    if (!nodes[nodeId]){
+      if(!callback)
+        throw new Error('Node ' + nodeId + ' not found!');
+      return callback(new Error('Node ' + nodeId + ' not found!'));
+    }
+
+    if (nodeId === 'ROOT'){
+      if(!callback)
+        throw new Error('Not allowed to remove ROOT node');
+      return callback(new Error('Not allowed to remove ROOT node'))
+    }
+
+    if (nodeId === settings.orphanParentId){
+      if(!callback)
+        throw new Error('Not allowed to remove orphanParent node');
+      return callback(new Error('Not allowed to remove orphanParent node'));
+    }
 
     this.initialize();
 
@@ -83,7 +130,9 @@ module.exports = function Tree(settings) {
       }
 
       if(!nodes[newParentForChildren]){
-        throw new Error('newParentForChildren node not found!')
+        if(!callback)
+          throw new Error('newParentForChildren node not found!');
+        return callback(new Error('newParentForChildren node not found!'));
       }
       if(newParentForChildren && nodes[newParentForChildren]){
         for(i = 0; i < nodes[nodeId]._children.length; i++){
@@ -92,14 +141,19 @@ module.exports = function Tree(settings) {
         }
       }
       else{
-        throw new Error('No orphane node or new parent found!')
+        if(!callback)
+          throw new Error('No orphane node or new parent found!');
+        return callback(new Error('No orphane node or new parent found!'));
       }
     }
     
     delete nodes[nodeId];
 
     this.initialized = false;
-    this.initialize();
+
+    if(callback)
+      return callback(null, true);
+
   }
 
   this.getNodeCopy = function(nodeId){
@@ -114,24 +168,54 @@ module.exports = function Tree(settings) {
     return clone(nodes[nodeId]);
   }
 
-  this.updateNode = function(nodeObject){
-    if (!nodeObject)
-      throw new Error('Missing nodeObject');
+  this.updateNode = function(nodeObject, callback){
+    if (!nodeObject){
+      if(!callback)
+        throw new Error('Missing nodeObject');
+      return callback(new Error('Missing nodeObject'));
+    }
 
-    if (typeof nodeObject !== 'object')
-      throw new Error('Missing nodeObject');    
+    if (typeof nodeObject !== 'object'){
+      if(!callback)
+        throw new Error('Missing nodeObject');    
+      return callback(new Error('Missing nodeObject'));
+    }
 
-    if (!nodeObject._id)
-      throw new Error('Missing nodeObject._id');    
+    if (!nodeObject._id){
+      if(!callback)
+        throw new Error('Missing nodeObject._id');
+      return callback(new Error('Missing nodeObject._id'));
 
-    if (!nodes[ nodeObject._id ])
-      throw new Error('Node ' + nodeObject._id + ' not found, I can not update!');
+    }
+
+    if (!nodes[ nodeObject._id ]){
+      if(!callback)
+        throw new Error('Node ' + nodeObject._id + ' not found, I can not update!');
+      return callback(new Error('Node ' + nodeObject._id + ' not found, I can not update!'));
+    }
+
+    if (nodeObject._children){
+      if(!callback)
+        throw new Error('_children field is not allowed.');
+      return callback(new Error('_children field is not allowed.'));
+    }
+
+    this.initialize();
 
     var newNode = clone(nodeObject);
+
+    if (!newNode._parent && newNode._id !== 'ROOT'){
+      debug('warning', 'Node ' + newNode._id + ' will be connected to orphan node');
+      newNode._parent = settings.orphanParentId;
+    }
+
     nodes[newNode._id] = newNode;
-    
+
     this.initialized = false;
-    this.initialize();
+
+    if(callback && typeof callback === 'function'){
+      return callback(null, nodes[newNode._id]);
+    }
 
   }
 
