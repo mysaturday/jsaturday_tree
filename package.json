@@ -14,5 +14,9 @@
   "devDependencies": {
     "mocha": "2.5.3",
     "should": "9.0.2"
+  },
+"repository" :{ 
+    "type" : "git", 
+    "url" : "https://github.com/mysaturday/jsaturday_tree.git"
   }  
 }
