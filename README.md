@@ -10,6 +10,7 @@ The tree is defined by:
 - *One* parent for each node, or *zero* parents (in this case node will be connected to orphan node).
 
 ## New features
+- v 1.1.2 bug fix: in createNode(*node*), *node* is passed by copy.
 - v 1.1 added optional callbacks for *addNode()*, *removeNode()*, and *updateNode()*. Updated unit tests.
 
 ## Installation

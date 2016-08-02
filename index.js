@@ -33,6 +33,9 @@ module.exports = function Tree(settings) {
   var initialized = false;
 
   this.addNode = function(node, callback) {
+
+    node = JSON.parse(JSON.stringify(node));
+
     if (!node._id){
       if(!callback)
         throw new Error('Missing _id for node ' + node);
